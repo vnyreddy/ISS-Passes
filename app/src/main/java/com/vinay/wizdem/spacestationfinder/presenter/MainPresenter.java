@@ -3,6 +3,7 @@ package com.vinay.wizdem.spacestationfinder.presenter;
 import android.util.Log;
 
 import com.vinay.wizdem.spacestationfinder.model.flyby.FlyBy;
+import com.vinay.wizdem.spacestationfinder.model.flyby.IssResponse;
 import com.vinay.wizdem.spacestationfinder.rest.ApiClient;
 import com.vinay.wizdem.spacestationfinder.rest.ApiInterface;
 import com.vinay.wizdem.spacestationfinder.view.MainView;
@@ -19,15 +20,16 @@ import retrofit2.Response;
  * Presenter Class for MainActivity
  * supports view decision making with the help of PresenterLifeCycle call backs (didn't used in this instance)
  * Communicate with model and call rest api for use current location flyby
- *
  */
 
 public class MainPresenter implements PresenterLifeCycle {
 
     private MainView view;
+    private List<IssResponse> model;
 
-    public MainPresenter(MainView view){
+    public MainPresenter(MainView view) {
         this.view = view;
+        model = new ArrayList<>();
     }
 
     @Override
@@ -48,20 +50,23 @@ public class MainPresenter implements PresenterLifeCycle {
     public void onDestroy() {
 
     }
+
     // requesting the current location flyby date and time by passing user current geo coordinates
-    public void onFlybyRequest(double lat, double lon, double alt){
+    public void onFlybyRequest(double lat, double lon) {
         ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
-        Call<FlyBy> call = apiInterface.getFlyByList(lat,lon,alt);
+        Call<FlyBy> call = apiInterface.getFlyByList(lat, lon);
         call.enqueue(new Callback<FlyBy>() {
             @Override
             public void onResponse(Call<FlyBy> call, Response<FlyBy> respons) {
-                    try{
-                        List<com.vinay.wizdem.spacestationfinder.model.flyby.Response> model = respons.body().getResponse();
-                        view.displayList(model);
-                    }catch (Exception e){
-                        Log.e("FLYBY", String.valueOf(e));
-                    }
+                if (respons.code() == 400) {
+                    view.onFailureRestRequest();
+                } else {
+                    model = respons.body().getIssResponse();
 
+                    if (model != null) {
+                        view.displayList(model);
+                    } else view.onFailureRestRequest();
+                }
             }
 
             @Override

@@ -14,7 +14,7 @@ import retrofit2.http.Query;
 public interface ApiInterface {
 
     @GET("iss-pass.json")
-    Call<FlyBy> getFlyByList(@Query("lat") double latitude, @Query("lon") double longitude, @Query("alt") double altitude);
+    Call<FlyBy> getFlyByList(@Query("lat") double latitude, @Query("lon") double longitude);
 
     @GET("iss-now.json")
     Call<Iss> getIssLocation();

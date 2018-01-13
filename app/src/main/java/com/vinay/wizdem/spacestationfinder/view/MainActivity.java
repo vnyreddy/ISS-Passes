@@ -18,11 +18,10 @@ import android.widget.Toast;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.vinay.wizdem.spacestationfinder.MessageEvent;
 import com.vinay.wizdem.spacestationfinder.PermissionUtil;
 import com.vinay.wizdem.spacestationfinder.R;
 import com.vinay.wizdem.spacestationfinder.ReceiverEvent;
-import com.vinay.wizdem.spacestationfinder.model.flyby.Response;
+import com.vinay.wizdem.spacestationfinder.model.flyby.IssResponse;
 import com.vinay.wizdem.spacestationfinder.presenter.MainPresenter;
 
 import org.greenrobot.eventbus.EventBus;
@@ -43,34 +42,38 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
     private static final int PERMISSION_REQUEST_LOCATION = 0;
 
-    MainPresenter presenter = new MainPresenter(this);
+    MainPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         view = (View) findViewById(R.id.root);
-        button = (ImageButton)findViewById(R.id.findIssFlyby);
+        button = (ImageButton) findViewById(R.id.findIssFlyby);
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mRecyclerView = (RecyclerView) findViewById(R.id.iss_flyby_list);
         layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(isNetworkConnected()){
-                    PermissionUtil.hasNetworkPermission = true;
-                    requestCurrentLocation();
-                }else {
-                    Snackbar.make(view,"Internet unavilable, Please check..",
-                            Snackbar.LENGTH_SHORT).show();
-                }
+                bigenIssPassShowProcedure();
             }
         });
+        bigenIssPassShowProcedure();
+    }
 
+    private void bigenIssPassShowProcedure(){
+        if (isNetworkConnected()) {
+            PermissionUtil.hasNetworkPermission = true;
+            requestCurrentLocation();
+        } else {
+            Snackbar.make(view, "Internet unavilable, Please check..",
+                    Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onReceiverEvent(ReceiverEvent event){
+    public void onReceiverEvent(ReceiverEvent event) {
         requestCurrentLocation();
     }
 
@@ -118,18 +121,18 @@ public class MainActivity extends AppCompatActivity implements MainView,
     // Current location
     private void requestCurrentLocation() {
         // Check for location access permissions
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             PermissionUtil.hasLocationPermission = true;
-            //location permission already available, start accessing location service
             Snackbar.make(view, "Accessing Location..",
                     Snackbar.LENGTH_SHORT).show();
+            //location permission already available, start accessing location service
             mFusedLocationClient.getLastLocation().
                     addOnSuccessListener(this, new OnSuccessListener<Location>() {
                         @Override
                         public void onSuccess(Location location) {
-                            if(location != null){
+                            if (location != null) {
                                 //have to pass lat lon to api request
-                                presenter.onFlybyRequest(location.getLatitude(),location.getLongitude(),location.getAltitude());
+                                presenter.onFlybyRequest(location.getLatitude(), location.getLongitude());
 
                             }
                         }
@@ -149,23 +152,25 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
     // display the list of flyby timestamp and duration
     @Override
-    public void displayList(List<Response> responses) {
-        if(responses != null){
-            button.setVisibility(View.GONE);
+    public void displayList(List<IssResponse> responses) {
+        if (responses != null) {
+          //  button.setVisibility(View.GONE);
             adapter = new MainAdapter(responses);
             mRecyclerView.setLayoutManager(layoutManager);
             mRecyclerView.setAdapter(adapter);
         }
     }
+
     // in case of network failure, notifying user
     @Override
     public void onFailureRestRequest() {
-        Toast.makeText(getApplicationContext(),"API failure to get response",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "API failure to get response", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        presenter = new MainPresenter(this);
         EventBus.getDefault().register(this);
     }
 

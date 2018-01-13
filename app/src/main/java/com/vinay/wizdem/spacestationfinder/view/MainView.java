@@ -1,6 +1,6 @@
 package com.vinay.wizdem.spacestationfinder.view;
 
-import com.vinay.wizdem.spacestationfinder.model.flyby.Response;
+import com.vinay.wizdem.spacestationfinder.model.flyby.IssResponse;
 
 import java.util.List;
 
@@ -10,6 +10,6 @@ import java.util.List;
  */
 
 public interface MainView {
-    void displayList(List<Response> responses);
+    void displayList(List<IssResponse> responses);
     void onFailureRestRequest();
 }

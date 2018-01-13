@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.vinay.wizdem.spacestationfinder.R;
-import com.vinay.wizdem.spacestationfinder.model.flyby.Response;
+import com.vinay.wizdem.spacestationfinder.model.flyby.IssResponse;
 
 import java.util.List;
 
@@ -17,9 +17,9 @@ import java.util.List;
 
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder>{
 
-    List<Response> model;
+    List<IssResponse> model;
 
-    public MainAdapter(List<Response> responses) {
+    public MainAdapter(List<IssResponse> responses) {
         model = responses;
     }
 

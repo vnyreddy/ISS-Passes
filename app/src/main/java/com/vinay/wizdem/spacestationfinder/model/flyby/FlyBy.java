@@ -20,7 +20,7 @@ public class FlyBy {
     private Request request;
     @SerializedName("response")
     @Expose
-    private List<Response> response;
+    private List<IssResponse> response;
 
     public String getMessage() {
         return message;
@@ -38,11 +38,11 @@ public class FlyBy {
         this.request = request;
     }
 
-    public List<Response> getResponse() {
+    public List<IssResponse> getIssResponse() {
         return response;
     }
 
-    public void setResponse(List<Response> response) {
+    public void setIssResponse(List<IssResponse> response) {
         this.response = response;
     }
 
