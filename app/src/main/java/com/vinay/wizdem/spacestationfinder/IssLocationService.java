@@ -29,6 +29,8 @@ import retrofit2.Response;
 public class IssLocationService extends Service {
 
     private IssPosition model;
+    private Thread t;
+    private volatile boolean isThreadRunning = false;
 
     public IssLocationService(){
 
@@ -47,25 +49,29 @@ public class IssLocationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true){
-                    requestIssLocation();
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+        if(!isThreadRunning){
+            t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (isThreadRunning){
+                        requestIssLocation();
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
+
                 }
 
-            }
-
-        });
-        t.start();
+            });
+            isThreadRunning = true;
+            t.start();
+        }
         return START_STICKY;
     }
-    //Retrofit http call
+
+    //Retrofit service call
     private void requestIssLocation() {
         ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
         Call<Iss> call = apiInterface.getIssLocation();
@@ -89,6 +95,7 @@ public class IssLocationService extends Service {
 
     @Override
     public void onDestroy() {
+        isThreadRunning = false;
         stopSelf();
         super.onDestroy();
     }
