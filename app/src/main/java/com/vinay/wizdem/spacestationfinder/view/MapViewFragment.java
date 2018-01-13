@@ -46,7 +46,6 @@ public class MapViewFragment extends MapFragment implements OnMapReadyCallback {
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         intent = new Intent(getActivity(), IssLocationService.class);
-        getActivity().startService(intent);
     }
 
     @Override
@@ -83,7 +82,7 @@ public class MapViewFragment extends MapFragment implements OnMapReadyCallback {
 
     @Override
     public void onStop() {
-    EventBus.getDefault().unregister(this);
+        EventBus.getDefault().unregister(this);
         getActivity().stopService(intent);
     super.onStop();
 }
@@ -91,6 +90,7 @@ public class MapViewFragment extends MapFragment implements OnMapReadyCallback {
     @Override
     public void onStart() {
         super.onStart();
+        getActivity().startService(intent);
         EventBus.getDefault().register(this);
     }
 
