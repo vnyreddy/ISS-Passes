@@ -5,7 +5,8 @@ package com.vinay.wizdem.spacestationfinder;
  */
 
 public class ReceiverEvent {
-    public ReceiverEvent(){
-
+    public final boolean flag;
+    public ReceiverEvent(boolean flag){
+        this.flag = flag;
     }
 }

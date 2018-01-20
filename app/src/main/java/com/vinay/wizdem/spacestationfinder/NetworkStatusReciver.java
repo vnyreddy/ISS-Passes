@@ -24,9 +24,10 @@ public class NetworkStatusReciver extends BroadcastReceiver {
         // Check internet connection and accrding to state change the
         // text of activity by calling method
         if (networkInfo != null && networkInfo.isConnected()){
-            EventBus.getDefault().post(new ReceiverEvent());
+            EventBus.getDefault().post(new ReceiverEvent(Utils.SUCESS));
         }else {
             Toast.makeText(context,"NO Network, Please Check Connection",Toast.LENGTH_SHORT).show();
+            EventBus.getDefault().post(new ReceiverEvent(Utils.FAILURE));
         }
     }
 }

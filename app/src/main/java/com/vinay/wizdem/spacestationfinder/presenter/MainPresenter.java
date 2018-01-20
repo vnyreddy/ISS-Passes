@@ -21,12 +21,10 @@ import retrofit2.Response;
  * here I choose not to use any context.
  *
  * Presenter Class for MainActivity
- * supports view decision making with the help of PresenterLifeCycle call backs
- * (didn't used in this instance, tying to convey the knowledge)
  * Communicate with model and call rest api for use current location flyby
  */
 
-public class MainPresenter implements PresenterLifeCycle {
+public class MainPresenter {
 
     private MainView view;
     private List<IssResponse> model;
@@ -61,22 +59,4 @@ public class MainPresenter implements PresenterLifeCycle {
         });
     }
 
-    @Override
-    public void onCreate() {
-    }
-
-    @Override
-    public void onPause() {
-
-    }
-
-    @Override
-    public void onResume() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
-    }
 }

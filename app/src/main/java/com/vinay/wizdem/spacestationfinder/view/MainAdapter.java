@@ -17,7 +17,7 @@ import java.util.List;
 
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder>{
 
-    List<IssResponse> model;
+    private List<IssResponse> model;
 
     public MainAdapter(List<IssResponse> responses) {
         model = responses;
