@@ -17,8 +17,12 @@ import retrofit2.Response;
 
 /**
  * Created by vinay_1 on 1/6/2018.
+ * Every development process have defined certain rules and responsibilities to design each component in MVP,
+ * here I choose not to use any context.
+ *
  * Presenter Class for MainActivity
- * supports view decision making with the help of PresenterLifeCycle call backs (didn't used in this instance)
+ * supports view decision making with the help of PresenterLifeCycle call backs
+ * (didn't used in this instance, tying to convey the knowledge)
  * Communicate with model and call rest api for use current location flyby
  */
 
@@ -30,25 +34,6 @@ public class MainPresenter implements PresenterLifeCycle {
     public MainPresenter(MainView view) {
         this.view = view;
         model = new ArrayList<>();
-    }
-
-    @Override
-    public void onCreate() {
-    }
-
-    @Override
-    public void onPause() {
-
-    }
-
-    @Override
-    public void onResume() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
     }
 
     // requesting the current location flyby date and time by passing user current geo coordinates
@@ -74,5 +59,24 @@ public class MainPresenter implements PresenterLifeCycle {
                 view.onFailureRestRequest();
             }
         });
+    }
+
+    @Override
+    public void onCreate() {
+    }
+
+    @Override
+    public void onPause() {
+
+    }
+
+    @Override
+    public void onResume() {
+
+    }
+
+    @Override
+    public void onDestroy() {
+
     }
 }

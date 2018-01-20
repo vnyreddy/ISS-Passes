@@ -6,13 +6,11 @@ package com.vinay.wizdem.spacestationfinder.model.flyby;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
-import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class IssResponse implements Serializable{
+public class IssResponse {
 
     @SerializedName("duration")
     @Expose

@@ -3,10 +3,13 @@ package com.vinay.wizdem.spacestationfinder.view;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.location.Location;
 import android.net.ConnectivityManager;
+import android.os.Build;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -39,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
     private View view;
     private FusedLocationProviderClient mFusedLocationClient;
     private ImageButton button;
+    private Resources res;
 
     private static final int PERMISSION_REQUEST_LOCATION = 0;
 
@@ -49,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         view = (View) findViewById(R.id.root);
+        res = getResources();
         button = (ImageButton) findViewById(R.id.findIssFlyby);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mRecyclerView = (RecyclerView) findViewById(R.id.iss_flyby_list);
@@ -67,8 +72,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
             PermissionUtil.hasNetworkPermission = true;
             requestCurrentLocation();
         } else {
-            Snackbar.make(view, "Internet unavilable, Please check..",
-                    Snackbar.LENGTH_SHORT).show();
+            makeSnackbar(res.getString(R.string.no_internet));
         }
     }
 
@@ -81,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
         // permission has not been granted, must be requested here.
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
 
-            Snackbar.make(view, "Location permission is required to access current location.",
+            Snackbar.make(view,res.getString(R.string.location_per_req),
                     Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -91,8 +95,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
                 }
             }).show();
         } else {
-            Snackbar.make(view, "Permission is not avilable. Request locaiton permission.",
-                    Snackbar.LENGTH_SHORT).show();
+            makeSnackbar(res.getString(R.string.no_loc_per));
             // Request the permission. The result will be received in onRequestPermissionResult().
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSION_REQUEST_LOCATION);
@@ -106,14 +109,12 @@ public class MainActivity extends AppCompatActivity implements MainView,
             if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 PermissionUtil.hasLocationPermission = true;
                 //permission grated. Start access location service
-                Snackbar.make(view, "Location Permission Granted, Accessing location.",
-                        Snackbar.LENGTH_SHORT).show();
+                makeSnackbar(res.getString(R.string.granted_access_loc));
                 requestCurrentLocation();
             } else {
                 PermissionUtil.hasLocationPermission = false;
                 //permission request was denied
-                Snackbar.make(view, "Location permission was denied.",
-                        Snackbar.LENGTH_SHORT).show();
+                makeSnackbar(res.getString(R.string.per_deny));
             }
         }
     }
@@ -121,10 +122,10 @@ public class MainActivity extends AppCompatActivity implements MainView,
     // Current location
     private void requestCurrentLocation() {
         // Check for location access permissions
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             PermissionUtil.hasLocationPermission = true;
-            Snackbar.make(view, "Accessing Location..",
-                    Snackbar.LENGTH_SHORT).show();
+            makeSnackbar(res.getString(R.string.access_loc));
             //location permission already available, start accessing location service
             mFusedLocationClient.getLastLocation().
                     addOnSuccessListener(this, new OnSuccessListener<Location>() {
@@ -133,7 +134,15 @@ public class MainActivity extends AppCompatActivity implements MainView,
                             if (location != null) {
                                 //have to pass lat lon to api request
                                 presenter.onFlybyRequest(location.getLatitude(), location.getLongitude());
-
+                            }else {
+                                Snackbar.make(view,res.getString(R.string.loc_try_again),
+                                        Snackbar.LENGTH_INDEFINITE).setAction("Try Again", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        // Request current location again
+                                        requestCurrentLocation();
+                                    }
+                                }).show();
                             }
                         }
                     });
@@ -161,10 +170,14 @@ public class MainActivity extends AppCompatActivity implements MainView,
         }
     }
 
+    private void makeSnackbar(String message){
+        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
+    }
+
     // in case of network failure, notifying user
     @Override
     public void onFailureRestRequest() {
-        Toast.makeText(getApplicationContext(), "API failure to get response", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(),res.getString(R.string.api_fail), Toast.LENGTH_SHORT).show();
     }
 
     @Override

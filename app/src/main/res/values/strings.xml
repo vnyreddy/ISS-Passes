@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">SpaceStationFinder</string>
     <string name="google_maps_key">AIzaSyChZEhvleDSozJeSPuxwOrDGJUshpQYPZE</string>
+    <string name="no_internet">Internet unavilable, Please check..</string>
+    <string name="location_per_req">Location permission is required to access current location.</string>
+    <string name="no_loc_per">Permission is not available. Request location permission.</string>
+    <string name="granted_access_loc">Location Permission Granted, Accessing location.</string>
+    <string name="per_deny">Location permission was denied.</string>
+    <string name="access_loc">Accessing Location..</string>
+    <string name="api_fail">API failure to get response</string>
+    <string name="loc_try_again">Unsuccessful Location. </string>
 </resources>
